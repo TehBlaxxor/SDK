@@ -43,10 +43,10 @@ namespace AdvancedSharp.Instance
             abilitySequence = new int[] {1, 3, 3, 2, 3, 4, 3, 1, 3, 1, 4, 1, 1, 2, 2, 4, 2, 2};
             Q = new Spell(SpellSlot.Q, 850f);
             Spells.Add(Q);
-            Q.SetSkillshot(0.75f, Q.Instance.SData.CastRadius, float.MaxValue, false, SkillshotType.SkillshotCircle);
+            Q.SetSkillshot(0.75f, Q.Width, float.MaxValue, false, SkillshotType.SkillshotCircle);
             W = new Spell(SpellSlot.W, 850f);
             Spells.Add(W);
-            W.SetSkillshot(0.5f, W.Instance.SData.CastRadius, W.Instance.SData.MissileSpeed, false,
+            W.SetSkillshot(0.5f, W.Width, W.Speed, false,
                 SkillshotType.SkillshotCircle);
             E = new Spell(SpellSlot.E, 700f);
             Spells.Add(E);
@@ -55,9 +55,9 @@ namespace AdvancedSharp.Instance
             Spells.Add(R);
             R.SetSkillshot(0.3f, (float) (80*Math.PI/180), float.MaxValue, false, SkillshotType.SkillshotCone);
 
-            Z = new Menu("Adv# - Cassiopeia", "root", true);
+            Z = new Menu("Adv# - Cassiopeia", "Adv# - Cassiopeia", true);
 
-            Menu MCombo = new Menu("Combo", "combo");
+            Menu MCombo = new Menu("combo", "Combo");
             {
                 MCombo.Add(new MenuBool("combo.q", "Use Q", true));
                 MCombo.Add(new MenuBool("combo.w", "Use W", true));
@@ -67,27 +67,29 @@ namespace AdvancedSharp.Instance
                 MCombo.Add(new MenuSlider("combo.r.minfacing", "R Minimum Facing", 1, 1, 5));
                 MCombo.Add(new MenuSlider("combo.r.minhit", "R Minimum Hit", 1, 1, 5));
                 MCombo.Add(new MenuBool("combo.r.smart", "Smart Ultimate", true));
-            }
-            Z.Add(MCombo);
 
-            Menu MHarass = new Menu("Harass", "harass");
+                Z.Add(MCombo);
+            }
+
+            Menu MHarass = new Menu("harass", "Harass");
             {
                 MHarass.Add(new MenuBool("harass.q", "Use Q", true));
                 MHarass.Add(new MenuBool("harass.w", "Use W", true));
                 MHarass.Add(new MenuBool("harass.e", "Use E", true));
                 MHarass.Add(new MenuBool("harass.spacer1", " "));
                 MHarass.Add(new MenuBool("harass.e.restriction", "E Only If Poisoned", true));
-            }
-            Z.Add(MHarass);
 
-            Menu MLH = new Menu("Last Hit", "lasthit");
+                Z.Add(MHarass);
+            }
+
+            Menu MLH = new Menu("lasthit", "Last Hit");
             {
                 MLH.Add(new MenuBool("lasthit.e", "Use E", true));
                 MLH.Add(new MenuBool("lasthit.e.auto", "Use E Automatically", false));
+                Z.Add(MLH);
             }
-            Z.Add(MLH);
 
-            Menu MLC = new Menu("Lane Clear", "laneclear");
+            Menu MLC = new Menu("laneclear", "Lane Clear");
             {
                 MLC.Add(new MenuBool("laneclear.q", "Use Q", true));
                 MLC.Add(new MenuBool("laneclear.w", "Use W", true));
@@ -96,10 +98,10 @@ namespace AdvancedSharp.Instance
                 MLC.Add(new MenuBool("laneclear.e.restriction", "E Only If Poisoned", true));
                 MLC.Add(new MenuBool("laneclear.e.lasthit", "E Only If Last Hit", true));
                 MLC.Add(new MenuSlider("laneclear.w.restriction", "W Minimum Hit", 3, 1, 10));
+                Z.Add(MLC);
             }
-            Z.Add(MLC);
 
-            Menu Misc = new Menu("Misc", "misc");
+            Menu Misc = new Menu("misc", "Misc");
             {
                 Misc.Add(new MenuBool("misc.manamenagertm", "Restrict Mana Usage", true));
                 Misc.Add(new MenuSlider("misc.manamenagertm.slider", "Minimum Mana", 35, 0, 95));
@@ -117,11 +119,12 @@ namespace AdvancedSharp.Instance
                 Misc.Add(new MenuSlider("misc.gc.hp", "if HP < ", 30));
                 Misc.Add(new MenuBool("misc.aablock", "Auto Attack Block in combo", false));
 
+                Z.Add(Misc);
+
 
             }
-            Z.Add(Misc);
 
-            Menu Drawings = new Menu("Drawings", "drawings");
+            Menu Drawings = new Menu("drawings", "Drawings");
             {
                 Drawings.Add(new MenuBool("draw", "Drawings", true));
                 Drawings.Add(new MenuBool("draw.q", "Draw Q Range", true));
@@ -129,17 +132,16 @@ namespace AdvancedSharp.Instance
                 Drawings.Add(new MenuBool("draw.e", "Draw E Range", true));
                 Drawings.Add(new MenuBool("draw.r", "Draw R Range", true));
                 Drawings.Add(new MenuBool("draw.tg", "Draw Target", true));
+                Z.Add(Drawings);
             }
-            Z.Add(Drawings);
 
+            /*
             Z.Add(new MenuBool("credits1", "Credits:"));
             Z.Add(new MenuBool("credits2", "TehBlaxxor - Coding"));
             Z.Add(new MenuBool("credits3", "Hoes - Coding"));
             Z.Add(new MenuBool("credits4", "Hawk - Testing"));
-
-
+            */
             Z.Attach();
-
             Game.OnUpdate += Game_OnUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
             Gapcloser.OnGapCloser += AntiGapCloser;
@@ -149,20 +151,20 @@ namespace AdvancedSharp.Instance
         private void Game_OnUpdate(EventArgs args)
         {
             Orbwalker.Attack = true;
-            KS();
-            // TearStack();
-            AutoLevel();
-            var target = TargetSelector.GetTarget(900f, DamageType.Magical);
+           // var target = TargetSelector.GetTarget(900f, DamageType.Magical);
             switch (Orbwalker.ActiveMode)
             {
                 case OrbwalkerMode.Orbwalk:
+                    /*
                 {
-                    if (Player.Distance(target.Position) > 440)
+                    if (Player.Distance(target.Position) > 440
+                        && target.IsValidTarget(Q.Range))
                         Orbwalker.Attack = false;
                     else
                         Orbwalker.Attack = true;
                 }
-                    Orbwalker.Attack = true;
+                     */
+                     Orbwalker.Attack = true;
                     Combo();
                     AABlock();
                     break;
@@ -176,10 +178,10 @@ namespace AdvancedSharp.Instance
                 case OrbwalkerMode.Hybrid:
                     Harass();
                     break;
-
-
-
             }
+            KS();
+            // TearStack();
+            AutoLevel();
         }
 
         private static void AABlock()
@@ -212,6 +214,7 @@ namespace AdvancedSharp.Instance
             }
         }
 
+
         private void AntiGapCloser(object sender, Gapcloser.GapCloserEventArgs e)
         {
             if (Z["misc"]["misc.gc"].GetValue<MenuBool>().Value
@@ -223,6 +226,7 @@ namespace AdvancedSharp.Instance
             }
         }
 
+
         private void Spellbook_OnCastSpell(Spellbook sender, SpellbookCastSpellEventArgs args)
         {
             if (args.Slot == SpellSlot.Q)
@@ -233,13 +237,9 @@ namespace AdvancedSharp.Instance
 
         private void Drawing_OnDraw(EventArgs args)
         {
-            var target = TargetSelector.GetTarget(850f, DamageType.Magical);
-            if (Z["draw"]["draw.tg"].GetValue<MenuBool>().Value && target.IsValidTarget())
-            {
-                Drawing.DrawCircle(target.Position, 75f, Color.DarkRed);
-            }
-
-            foreach (var x in Spells.Where(x => Z["draw." + x.Slot.ToString().ToLowerInvariant()].GetValue<MenuBool>().Value)
+            if (!Z["drawings"]["draw"].GetValue<MenuBool>().Value)
+                return;
+            foreach (var x in Spells.Where(x => Z["drawings"]["draw." + x.Slot.ToString().ToLowerInvariant()].GetValue<MenuBool>().Value)
                 )
             {
                 Drawing.DrawCircle(Player.Position, x.Range, x.IsReady()
@@ -249,26 +249,29 @@ namespace AdvancedSharp.Instance
             }
         }
 
+
         public static void Combo()
         {
             var target = TargetSelector.GetTarget(900f, DamageType.Magical);
 
             if (!target.IsValidTarget())
                 return;
+
             if (Z["combo"]["combo.q"].GetValue<MenuBool>().Value)
             {
-                if ((target.Health + 50 < Player.GetSpellDamage(target, SpellSlot.Q)
-                    && Q.IsReady())
+                if ((//target.Health + 50 < Player.GetSpellDamage(target, SpellSlot.Q) &&
+                     Q.IsReady())
                     ||
                     (!target.HasBuffOfType(BuffType.Poison) && E.IsInRange(target) && E.IsReady() && Q.IsReady() &&
                      Player.Mana >= Q.Instance.ManaCost + 2 * E.Instance.ManaCost)
                     || (!target.HasBuffOfType(BuffType.Poison) && E.Level < 1 && Q.IsReady() && Q.IsInRange(target))
                     ||
-                    (Q.IsReady() && E.IsReady() && E.IsInRange(target) &&
-                     target.Health + 25 < Player.GetSpellDamage(target, SpellSlot.Q) + Player.GetSpellDamage(target, SpellSlot.E) &&
-                     Player.Mana >= Q.Instance.ManaCost + E.Instance.ManaCost))
+                    (Q.IsReady() && E.IsReady() && E.IsInRange(target)) &&
+                     // target.Health + 25 < Player.GetSpellDamage(target, SpellSlot.Q) + Player.GetSpellDamage(target, SpellSlot.E) &&
+                      Player.Mana >= Q.Instance.ManaCost + E.Instance.ManaCost)
                     Q.Cast(target);
             }
+
             if (Z["combo"]["combo.w"].GetValue<MenuBool>().Value)
             {
                 if ((Player.HealthPercent <= 25 && !Player.IsFacing(target) && target.IsFacing(Player) &&
@@ -288,6 +291,7 @@ namespace AdvancedSharp.Instance
                      Player.GetSpellDamage(target, SpellSlot.W) > target.Health + 25))
                     W.Cast(target);
             }
+
             if (Z["combo"]["combo.e"].GetValue<MenuBool>().Value)
             {
                 if ((target.HasBuffOfType(BuffType.Poison) && E.IsReady() && target.IsValidTarget(E.Range) &&
@@ -297,8 +301,10 @@ Player.GetSpellDamage(target, SpellSlot.E)))
                     E.CastOnUnit(target);
             }
 
+            
             EasyRLogic();
             SmartR();
+             
         }
         private static void EasyRLogic()
         {
@@ -324,9 +330,9 @@ Player.GetSpellDamage(target, SpellSlot.E)))
                 if ((targets.Count() >= rminhitSpell
                     || facing.Count() >= rfaceSpell)
                     && R.IsReady()
-                    && rTarget.Health >= (Player.GetSpellDamage(rTarget, SpellSlot.Q)
+                    /* && rTarget.Health >= (Player.GetSpellDamage(rTarget, SpellSlot.Q)
                     + 2 * Player.GetSpellDamage(rTarget, SpellSlot.E) 
-                    + Player.GetSpellDamage(rTarget, SpellSlot.R)))
+                    + Player.GetSpellDamage(rTarget, SpellSlot.R))*/ )
                 {
                     R.Cast(rTarget);
                 }
@@ -398,6 +404,7 @@ Player.GetSpellDamage(target, SpellSlot.E)))
 
         public static void KS()
         {
+
             if (E.IsReady() && Z["misc"]["misc.eks"].GetValue<MenuBool>().Value)
             {
                 foreach (var x in GameObjects.EnemyHeroes.Where(x => !x.IsDead
@@ -479,6 +486,9 @@ Player.GetSpellDamage(target, SpellSlot.E)))
             var minionCount =
                 GameObjects.EnemyMinions.Where(m => m.IsValid && m.Distance(Player) < Q.Range).ToList();
 
+
+            var QFarmLocation = Q.GetCircularFarmLocation(new List<Obj_AI_Base>(minionCount), Q.Width);
+            
             var jungleMinion = ObjectManager.Get<Obj_AI_Minion>().Where(x => x.Team == GameObjectTeam.Neutral
                                                                              && !x.IsDead
                                                                              &&
@@ -487,11 +497,12 @@ Player.GetSpellDamage(target, SpellSlot.E)))
                 .OrderBy(x => x.MaxHealth)
                 .FirstOrDefault();
 
+
             if (jungleMinion != null)
             {
                 return;
             }
-
+    
 
             /*
             MinionManager.FarmLocation QFarmLocation =
@@ -517,13 +528,14 @@ Player.GetSpellDamage(target, SpellSlot.E)))
                 if (Z["laneclear"]["laneclear.q"].GetValue<MenuBool>().Value
                     && Q.IsReady()
                     && Player.Mana >= Q.Instance.ManaCost + 2 * E.Instance.ManaCost)
-                    Q.Cast(minion);
+                    Q.Cast(QFarmLocation.Position);
 
-                /*
+/*
                 var whit =
                     ObjectManager.Get<Obj_AI_Minion>()
                         .Where(x => x.Distance(WFarmLocation.Position) <= W.Width && !x.IsDead && x.IsEnemy);
-                 */
+ */
+
 
                 if (Z["laneclear"]["laneclear.w"].GetValue<MenuBool>().Value
                     && W.IsReady() &&
@@ -546,10 +558,9 @@ Player.GetSpellDamage(target, SpellSlot.E)))
 
                         || (emin.HasBuffOfType(BuffType.Poison)
                         && Z["laneclear"]["laneclear.e.lasthit"].GetValue<MenuBool>().Value
-                        && emin.Health <=
-Player.GetSpellDamage(emin, SpellSlot.E)
+                        && emin.Health <= Player.GetSpellDamage(emin, SpellSlot.E)
 ))
-                        E.CastOnUnit(emin);
+                        E.CastOnUnit(minion);
                 }
             }
         }

@@ -12,9 +12,11 @@ namespace AdvancedSharp
     {
         public static void LoadChampion(String Name)
         {
-            switch (Name.ToLowerInvariant())
+            Console.WriteLine(ObjectManager.Player.ChampionName);
+            switch (Name)
             {
-                case "cassiopeia":
+
+                case "Cassiopeia":
                     new Instance.Cassiopeia();
                     break;
                     /*

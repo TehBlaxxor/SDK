@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LeagueSharp;
+using LeagueSharp.SDK.Core;
 using LeagueSharp.SDK.Core.Events;
 
 namespace AdvancedSharp
@@ -17,6 +18,7 @@ namespace AdvancedSharp
 
         private static void Game_OnGameLoad(object sender, EventArgs e)
         {
+            Bootstrap.Init(null);
             Core.LoadChampion(ObjectManager.Player.ChampionName);
         }
     }
